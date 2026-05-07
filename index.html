@@ -12,9 +12,6 @@
   .page{max-width:860px;margin:0 auto;}
   h1{font-size:19px;font-weight:500;letter-spacing:-.02em;margin-bottom:2px;}
   .lead{font-size:13px;color:#888780;margin-bottom:20px;}
-  .mode-tabs{display:flex;gap:6px;margin-bottom:18px;}
-  .mode-tab{padding:8px 18px;border-radius:9px;border:1.5px solid #E2DFD8;background:#fff;font-family:inherit;font-size:13px;cursor:pointer;color:#888780;transition:all .15s;}
-  .mode-tab.active{background:#1C1B18;color:#fff;border-color:#1C1B18;}
   .columns{display:grid;grid-template-columns:1fr 230px;gap:16px;align-items:start;}
   @media(max-width:640px){.columns{grid-template-columns:1fr;}}
   .search-wrap{position:relative;margin-bottom:14px;}
@@ -83,24 +80,6 @@
   .nta-link{font-size:10px;color:#C0BDB6;text-decoration:none;display:none;}
   .nta-link.show{display:inline;}
   .nta-link:hover{color:#888780;}
-  .photo-panel{display:none;}
-  .photo-panel.show{display:block;}
-  .drop-zone{border:1.5px dashed #D8D5CE;border-radius:14px;background:#fff;padding:36px 20px;text-align:center;cursor:pointer;position:relative;transition:border-color .15s;margin-bottom:12px;}
-  .drop-zone.dragover{border-color:#1C1B18;background:#F0EDE6;}
-  .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-  .drop-zone h3{font-size:14px;font-weight:500;margin-bottom:4px;}
-  .drop-zone p{font-size:12px;color:#A0A09A;}
-  .photo-preview{display:none;margin-bottom:12px;position:relative;}
-  .photo-preview img{width:100%;border-radius:10px;border:.5px solid #E2DFD8;max-height:180px;object-fit:cover;}
-  .photo-remove{position:absolute;top:8px;right:8px;width:24px;height:24px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-  .btn-scan{width:100%;padding:12px;background:#1C1B18;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;display:none;margin-bottom:12px;transition:opacity .15s;}
-  .btn-scan:hover{opacity:.85;}
-  .btn-scan:disabled{opacity:.4;cursor:not-allowed;}
-  .scan-loading{display:none;text-align:center;padding:20px 0;}
-  .spinner{width:24px;height:24px;border:2px solid #E2DFD8;border-top-color:#1C1B18;border-radius:50%;animation:spin .75s linear infinite;margin:0 auto 10px;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .scan-loading p{font-size:12px;color:#A0A09A;}
-  .scan-error{background:#FDEAEA;border:.5px solid #f0a0a0;border-radius:10px;padding:12px;font-size:12px;color:#A32D2D;display:none;margin-bottom:10px;}
   .ref-card{background:#fff;border-radius:14px;border:.5px solid #E2DFD8;overflow:hidden;position:sticky;top:24px;}
   .ref-head{padding:12px 14px 6px;}
   .ref-head-title{font-size:12px;font-weight:500;}
@@ -120,53 +99,38 @@
 <body>
 <div class="page">
   <h1>収入印紙チェッカー</h1>
-  <p class="lead">書類を選んで金額を入力、または写真を読み取って即判定 — 軽減税率（令和9年3月31日まで）適用済み</p>
-  <div class="mode-tabs">
-    <button class="mode-tab active" onclick="setMode('manual',this)">手入力で判定</button>
-    <button class="mode-tab" onclick="setMode('photo',this)">写真で読み取り</button>
-  </div>
+  <p class="lead">書類を選んで金額を入力するだけ — 軽減税率（令和9年3月31日まで）適用済み</p>
+
   <div class="columns">
     <div>
-      <div id="manualPanel">
-        <div class="search-wrap">
-          <svg class="search-icon" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#B0AEA8" stroke-width="1.4"/><path d="M10 10L14 14" stroke="#B0AEA8" stroke-width="1.4" stroke-linecap="round"/></svg>
-          <input class="search-input" id="searchInput" type="text" placeholder="書類名で検索（例：注文請書、見積書…）" oninput="onSearch()" autocomplete="off">
-          <button class="search-clear" id="clearBtn" onclick="clearSearch()">✕</button>
-        </div>
-        <div class="search-results" id="searchResults"></div>
-        <div id="normalView">
-          <div class="sec">印紙が必要になりうる書類</div>
-          <div class="taxable-grid" id="taxableGrid"></div>
-          <div class="sec">印紙不要の書類</div>
-          <div class="exempt-grid" id="exemptGrid"></div>
-        </div>
-        <div class="selected-panel" id="selectedPanel">
-          <div class="sel-icon" id="selIcon"></div>
-          <div class="sel-info"><span class="sel-name" id="selName"></span><span class="sel-hint" id="selHint"></span></div>
-          <button class="change-btn" onclick="resetSelection()">変更</button>
-        </div>
-        <div class="amount-section" id="amountSection">
-          <div class="amount-lbl">金額（税抜）</div>
-          <div class="amount-row"><span class="yen">¥</span><input class="amount-input" id="amountInput" type="number" placeholder="0" min="0" oninput="judge()"></div>
-          <div class="amount-fmt" id="amountFmt"></div>
-        </div>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="#B0AEA8" stroke-width="1.4"/><path d="M10 10L14 14" stroke="#B0AEA8" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input class="search-input" id="searchInput" type="text" placeholder="書類名で検索（例：注文請書、見積書…）" oninput="onSearch()" autocomplete="off">
+        <button class="search-clear" id="clearBtn" onclick="clearSearch()">✕</button>
       </div>
-      <div class="photo-panel" id="photoPanel">
-        <div class="drop-zone" id="dropZone">
-          <input type="file" id="fileInput" accept="image/*,.pdf">
-          <div style="font-size:28px;margin-bottom:10px;">📄</div>
-          <h3>書類の写真をアップロード</h3>
-          <p>クリックまたはドラッグ&ドロップ<br>スマホのカメラ撮影でもOK</p>
-        </div>
-        <div class="photo-preview" id="photoPreview">
-          <img id="previewImg" src="" alt="">
-          <button class="photo-remove" onclick="resetPhoto()">✕</button>
-        </div>
-        <button class="btn-scan" id="btnScan" onclick="scanDoc()">AIで読み取って判定する</button>
-        <div class="scan-loading" id="scanLoading"><div class="spinner"></div><p>書類を読み取り中...</p></div>
-        <div class="scan-error" id="scanError"></div>
+      <div class="search-results" id="searchResults"></div>
+
+      <div id="normalView">
+        <div class="sec">印紙が必要になりうる書類</div>
+        <div class="taxable-grid" id="taxableGrid"></div>
+        <div class="sec">印紙不要の書類</div>
+        <div class="exempt-grid" id="exemptGrid"></div>
       </div>
+
+      <div class="selected-panel" id="selectedPanel">
+        <div class="sel-icon" id="selIcon"></div>
+        <div class="sel-info"><span class="sel-name" id="selName"></span><span class="sel-hint" id="selHint"></span></div>
+        <button class="change-btn" onclick="resetSelection()">変更</button>
+      </div>
+
+      <div class="amount-section" id="amountSection">
+        <div class="amount-lbl">金額（税抜）</div>
+        <div class="amount-row"><span class="yen">¥</span><input class="amount-input" id="amountInput" type="number" placeholder="0" min="0" oninput="judge()"></div>
+        <div class="amount-fmt" id="amountFmt"></div>
+      </div>
+
       <div class="nta-row"><a class="nta-link" id="ntaLink" href="https://www.nta.go.jp/publication/pamph/inshi/pdf/zeigaku_ichiran_r0204.pdf" target="_blank">国税庁 印紙税額一覧表 ↗</a></div>
+
       <div class="result" id="result">
         <span class="result-badge" id="rBadge"></span>
         <div class="result-amount" id="rAmount"></div>
@@ -176,8 +140,10 @@
           <button class="copy-btn" id="copyBtn" onclick="copyResult()">コピー</button>
         </div>
       </div>
+
       <p class="disclaimer">※ 国税庁「建設工事請負契約書の印紙税軽減措置の延長について」（令和6年4月改訂）および<a href="https://www.nta.go.jp/publication/pamph/inshi/pdf/zeigaku_ichiran_r0204.pdf" target="_blank">印紙税額一覧表</a>に基づく参考判定です。最終確認は税理士等にご相談ください。</p>
     </div>
+
     <div>
       <div class="ref-card">
         <div class="ref-head">
@@ -190,83 +156,78 @@
     </div>
   </div>
 </div>
+
 <script>
 /* ============================================================
    ★ 編集するのはここだけ
    ============================================================ */
+
 const DOCS = [
-  {id:'ukeoisho',name:'注文請書',hint:'受注側が発行（請負）',kw:['請書','うけしょ'],type:'t',color:{bg:'#EEEDFE',ic:'#7F77DD'},tbl:'rc2',basis:'印紙税法別表第一 第2号文書。租税特別措置法第91条により令和9年3月31日まで軽減税率適用。',extra:'※ 建設工事の請負の注文請書が対象。建設工事以外（保守・設計等）は本則税率になる場合があります。'},
-  {id:'ukeoi_c',name:'工事請負契約書',hint:'建設・設備・土木工事',kw:['工事','建設','設備','施工','請負'],type:'t',color:{bg:'#EAF3DE',ic:'#639922'},tbl:'rc2',basis:'印紙税法別表第一 第2号文書。租税特別措置法第91条により令和9年3月31日まで軽減税率適用（国税庁「軽減措置延長について」令和6年4月改訂）。',extra:''},
-  {id:'ukeoi_o',name:'その他の請負契約書',hint:'保守・設計・委託（軽減なし）',kw:['委託','保守','業務','設計'],type:'t',color:{bg:'#E6F1FB',ic:'#378ADD'},tbl:'uo',basis:'印紙税法別表第一 第2号文書。建設業法第2条第1項の建設工事に該当しないため軽減税率の対象外。本則税率を適用。',extra:'※ 建設工事に該当しない請負（設備保守・機械修理・建物設計等）は軽減措置の対象外です。'},
-  {id:'ryoshu',name:'領収書・受取書',hint:'5万円未満は不要',kw:['受取','受領','りょうしゅう'],type:'t',color:{bg:'#FAECE7',ic:'#D85A30'},tbl:'ry',basis:'印紙税法別表第一 第17号文書（金銭の受取書）。5万円未満は非課税。',extra:''},
-  {id:'mitsu',name:'見積書・工事見積書',kw:['みつもり'],type:'e',tbl:'ex',basis:'課税物件表に列挙なし。金額の記載があっても非課税。'},
-  {id:'seikyu',name:'請求書',kw:['せいきゅう'],type:'e',tbl:'ex',basis:'課税物件表に列挙なし。非課税文書。'},
-  {id:'chumon',name:'注文書・発注書（発注側）',kw:['発注','はっちゅう'],type:'e',tbl:'ex',basis:'発注側が作成する注文書は課税物件表に列挙なし。非課税。'},
-  {id:'souden',name:'売伝・作業依頼伝票',kw:['売上伝票','伝票'],type:'e',tbl:'ex',basis:'社内帳票類は課税文書に該当しない。'},
-  {id:'houkoku',name:'報告書・工事完了報告書',kw:['完了','ほうこく'],type:'e',tbl:'ex',basis:'報告書・工事完了報告書等は課税文書に該当しない。'},
-  {id:'giji',name:'議事録・施工計画書等',kw:['ぎじろく','施工'],type:'e',tbl:'ex',basis:'議事録・施工要領書・完成図書・作業員名簿等は課税文書に該当しない。'},
-  {id:'denshi',name:'電子契約書（PDF締結）',kw:['電子','PDF'],type:'e',tbl:'ex',basis:'電磁的記録として締結された電子契約書は印紙税の課税対象外（印紙税法基本通達第44条）。'},
+  {id:'ukeoi',name:'注文請書・工事請負契約書',hint:'受注側が発行・建設／設備／土木工事',kw:['請書','うけしょ','工事','建設','設備','施工','請負'],type:'t',color:{bg:'#EAF3DE',ic:'#639922'},tbl:'rc2',basis:'印紙税法別表第一 第2号文書。租税特別措置法第91条により令和9年3月31日まで軽減税率適用（国税庁「軽減措置延長について」令和6年4月改訂）。',extra:''},
+  {id:'mitsu',  name:'見積書・工事見積書',       kw:['みつもり'],          type:'e',tbl:'ex',basis:'課税物件表に列挙なし。金額の記載があっても非課税。'},
+  {id:'seikyu', name:'請求書',                   kw:['せいきゅう'],        type:'e',tbl:'ex',basis:'課税物件表に列挙なし。非課税文書。'},
+  {id:'chumon', name:'注文書・発注書（発注側）',  kw:['発注','はっちゅう'], type:'e',tbl:'ex',basis:'発注側が作成する注文書は課税物件表に列挙なし。非課税。'},
+  {id:'souden', name:'売伝・作業依頼伝票',        kw:['売上伝票','伝票'],   type:'e',tbl:'ex',basis:'社内帳票類は課税文書に該当しない。'},
+  {id:'houkoku',name:'報告書・工事完了報告書',    kw:['完了','ほうこく'],   type:'e',tbl:'ex',basis:'報告書・工事完了報告書等は課税文書に該当しない。'},
+  {id:'giji',   name:'議事録・施工計画書等',      kw:['ぎじろく','施工'],   type:'e',tbl:'ex',basis:'議事録・施工要領書・完成図書・作業員名簿等は課税文書に該当しない。'},
+  {id:'denshi', name:'電子契約書（PDF締結）',     kw:['電子','PDF'],        type:'e',tbl:'ex',basis:'電磁的記録として締結された電子契約書は印紙税の課税対象外（印紙税法基本通達第44条）。'},
 ];
 
-/* 税額表
-   min : 適用下限（円）以上　max : 適用上限（円）以下
-   例）min:1000001, max:2000000 → 100万円超〜200万円以下
-*/
 const TAX_TABLES = {
   rc2:[
-    {min:0,        max:9999,        ex:true, l:'1万円未満'},
-    {min:10000,    max:1000000,     s:200,   l:'1万円以上〜100万円以下'},
-    {min:1000001,  max:2000000,     s:500,   l:'100万円超〜200万円以下'},
-    {min:2000001,  max:3000000,     s:1000,  l:'200万円超〜300万円以下'},
-    {min:3000001,  max:5000000,     s:5000,  l:'300万円超〜500万円以下'},
-    {min:5000001,  max:10000000,    s:10000, l:'500万円超〜1,000万円以下'},
-    {min:10000001, max:50000000,    s:30000, l:'1,000万円超〜5,000万円以下'},
-    {min:50000001, max:100000000,   s:60000, l:'5,000万円超〜1億円以下'},
-    {min:100000001,max:500000000,   s:160000,l:'1億円超〜5億円以下'},
-    {min:500000001,max:1000000000,  s:320000,l:'5億円超〜10億円以下'},
-    {min:1000000001,max:5000000000, s:480000,l:'10億円超〜50億円以下'},
-    {min:5000000001,max:Infinity,   s:480000,l:'50億円超'},
+    {min:0,         max:9999,        ex:true, l:'1万円未満'},
+    {min:10000,     max:1000000,     s:200,   l:'1万円以上〜100万円以下'},
+    {min:1000001,   max:2000000,     s:500,   l:'100万円超〜200万円以下'},
+    {min:2000001,   max:3000000,     s:1000,  l:'200万円超〜300万円以下'},
+    {min:3000001,   max:5000000,     s:5000,  l:'300万円超〜500万円以下'},
+    {min:5000001,   max:10000000,    s:10000, l:'500万円超〜1,000万円以下'},
+    {min:10000001,  max:50000000,    s:30000, l:'1,000万円超〜5,000万円以下'},
+    {min:50000001,  max:100000000,   s:60000, l:'5,000万円超〜1億円以下'},
+    {min:100000001, max:500000000,   s:160000,l:'1億円超〜5億円以下'},
+    {min:500000001, max:1000000000,  s:320000,l:'5億円超〜10億円以下'},
+    {min:1000000001,max:5000000000,  s:480000,l:'10億円超〜50億円以下'},
+    {min:5000000001,max:Infinity,    s:480000,l:'50億円超'},
   ],
   uo:[
-    {min:0,        max:9999,        ex:true, l:'1万円未満'},
-    {min:10000,    max:100000,      s:200,   l:'1万円以上〜10万円以下'},
-    {min:100001,   max:500000,      s:400,   l:'10万円超〜50万円以下'},
-    {min:500001,   max:1000000,     s:1000,  l:'50万円超〜100万円以下'},
-    {min:1000001,  max:5000000,     s:2000,  l:'100万円超〜500万円以下'},
-    {min:5000001,  max:10000000,    s:10000, l:'500万円超〜1,000万円以下'},
-    {min:10000001, max:50000000,    s:20000, l:'1,000万円超〜5,000万円以下'},
-    {min:50000001, max:100000000,   s:60000, l:'5,000万円超〜1億円以下'},
-    {min:100000001,max:500000000,   s:100000,l:'1億円超〜5億円以下'},
-    {min:500000001,max:Infinity,    s:200000,l:'5億円超'},
+    {min:0,         max:9999,        ex:true, l:'1万円未満'},
+    {min:10000,     max:100000,      s:200,   l:'1万円以上〜10万円以下'},
+    {min:100001,    max:500000,      s:400,   l:'10万円超〜50万円以下'},
+    {min:500001,    max:1000000,     s:1000,  l:'50万円超〜100万円以下'},
+    {min:1000001,   max:5000000,     s:2000,  l:'100万円超〜500万円以下'},
+    {min:5000001,   max:10000000,    s:10000, l:'500万円超〜1,000万円以下'},
+    {min:10000001,  max:50000000,    s:20000, l:'1,000万円超〜5,000万円以下'},
+    {min:50000001,  max:100000000,   s:60000, l:'5,000万円超〜1億円以下'},
+    {min:100000001, max:500000000,   s:100000,l:'1億円超〜5億円以下'},
+    {min:500000001, max:Infinity,    s:200000,l:'5億円超'},
   ],
   ry:[
-    {min:0,        max:49999,       ex:true, l:'5万円未満'},
-    {min:50000,    max:1000000,     s:200,   l:'5万円以上〜100万円以下'},
-    {min:1000001,  max:2000000,     s:400,   l:'100万円超〜200万円以下'},
-    {min:2000001,  max:3000000,     s:600,   l:'200万円超〜300万円以下'},
-    {min:3000001,  max:5000000,     s:1000,  l:'300万円超〜500万円以下'},
-    {min:5000001,  max:10000000,    s:2000,  l:'500万円超〜1,000万円以下'},
-    {min:10000001, max:20000000,    s:4000,  l:'1,000万円超〜2,000万円以下'},
-    {min:20000001, max:30000000,    s:6000,  l:'2,000万円超〜3,000万円以下'},
-    {min:30000001, max:50000000,    s:10000, l:'3,000万円超〜5,000万円以下'},
-    {min:50000001, max:100000000,   s:20000, l:'5,000万円超〜1億円以下'},
-    {min:100000001,max:Infinity,    s:-1,    l:'1億円超'},
+    {min:0,         max:49999,       ex:true, l:'5万円未満'},
+    {min:50000,     max:1000000,     s:200,   l:'5万円以上〜100万円以下'},
+    {min:1000001,   max:2000000,     s:400,   l:'100万円超〜200万円以下'},
+    {min:2000001,   max:3000000,     s:600,   l:'200万円超〜300万円以下'},
+    {min:3000001,   max:5000000,     s:1000,  l:'300万円超〜500万円以下'},
+    {min:5000001,   max:10000000,    s:2000,  l:'500万円超〜1,000万円以下'},
+    {min:10000001,  max:20000000,    s:4000,  l:'1,000万円超〜2,000万円以下'},
+    {min:20000001,  max:30000000,    s:6000,  l:'2,000万円超〜3,000万円以下'},
+    {min:30000001,  max:50000000,    s:10000, l:'3,000万円超〜5,000万円以下'},
+    {min:50000001,  max:100000000,   s:20000, l:'5,000万円超〜1億円以下'},
+    {min:100000001, max:Infinity,    s:-1,    l:'1億円超'},
   ],
 };
 
 const REF_TABS=[
-  {id:'rc2',label:'工事請負・注文請書',note:'軽減後の税率（〜令和9年3月31日）。出典：国税庁「建設工事請負契約書の印紙税軽減措置の延長について」令和6年4月改訂。'},
-  {id:'uo', label:'その他の請負',      note:'本則税率。出典：国税庁 印紙税額一覧表（令和6年版）第2号文書。'},
-  {id:'ry', label:'領収書',            note:'出典：国税庁 印紙税額一覧表（令和6年版）第17号文書。'},
+  {id:'rc2',label:'注文請書・工事請負',note:'軽減後の税率（〜令和9年3月31日）。出典：国税庁「建設工事請負契約書の印紙税軽減措置の延長について」令和6年4月改訂。'},
 ];
 
-/* ロジック */
-let sel=null,lastTxt='',fileB64=null,fileMime=null;
+/* ============================================================
+   ロジック（通常は編集不要）
+   ============================================================ */
+let sel=null, lastTxt='';
 
 function svg(ic,bg){return`<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="4" y="2" width="11" height="14" rx="2" stroke="${ic}" stroke-width="1.4"/><path d="M7 7h6M7 10h6M7 13h4" stroke="${ic}" stroke-width="1.2" stroke-linecap="round"/><rect x="11" y="11" width="5.5" height="5.5" rx="1.2" fill="${bg}" stroke="${ic}" stroke-width="1.2"/></svg>`;}
 
 function buildGrids(){
-  const tg=document.getElementById('taxableGrid'),eg=document.getElementById('exemptGrid');
+  const tg=document.getElementById('taxableGrid'), eg=document.getElementById('exemptGrid');
   DOCS.filter(d=>d.type==='t').forEach(d=>{
     const b=document.createElement('button');b.className='doc-btn';b.id='btn-'+d.id;
     b.innerHTML=`<div class="icon-wrap" style="background:${d.color.bg}">${svg(d.color.ic,d.color.bg)}</div><div><span class="doc-name">${d.name}</span><span class="doc-hint">${d.hint}</span></div>`;
@@ -277,15 +238,6 @@ function buildGrids(){
     el.innerHTML=`<span class="exempt-dot"></span><span class="exempt-name">${d.name}</span>`;
     el.onclick=()=>pick(d);eg.appendChild(el);
   });
-}
-
-function setMode(mode,el){
-  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('manualPanel').style.display=mode==='manual'?'block':'none';
-  document.getElementById('photoPanel').classList.toggle('show',mode==='photo');
-  document.getElementById('result').className='result';
-  document.getElementById('ntaLink').classList.remove('show');
 }
 
 function onSearch(){
@@ -357,7 +309,7 @@ function show(type,amt,note,basis,extra){
   document.getElementById('rBasis').textContent='根拠：'+basis;
   document.getElementById('ntaLink').classList.add('show');
   document.getElementById('copyBtn').textContent='コピー';
-  lastTxt=`【収入印紙 判定結果】\n書類：${sel?.name||'AI読み取り'}\n結果：${amt}\n${note}`;
+  lastTxt=`【収入印紙 判定結果】\n書類：${sel?.name||''}\n結果：${amt}\n${note}`;
 }
 
 function copyResult(){
@@ -368,95 +320,6 @@ function copyResult(){
   });
 }
 
-// 写真読み取り
-const dz=document.getElementById('dropZone'),fi=document.getElementById('fileInput');
-dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
-dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
-dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
-fi.addEventListener('change',()=>{if(fi.files[0])loadFile(fi.files[0]);});
-
-function loadFile(file){
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const url=e.target.result;fileB64=url.split(',')[1];fileMime=file.type||'image/jpeg';
-    document.getElementById('previewImg').src=file.type.startsWith('image/')?url:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 40"><rect width="80" height="40" fill="%23f0ede8" rx="6"/><text x="40" y="26" text-anchor="middle" font-size="14" fill="%23888780">PDF</text></svg>';
-    document.getElementById('photoPreview').style.display='block';
-    document.getElementById('dropZone').style.display='none';
-    document.getElementById('btnScan').style.display='block';
-    document.getElementById('scanError').style.display='none';
-    document.getElementById('result').className='result';
-    document.getElementById('ntaLink').classList.remove('show');
-  };
-  reader.readAsDataURL(file);
-}
-
-function resetPhoto(){
-  fileB64=null;fileMime=null;fi.value='';
-  document.getElementById('photoPreview').style.display='none';
-  document.getElementById('dropZone').style.display='block';
-  document.getElementById('btnScan').style.display='none';
-  document.getElementById('scanError').style.display='none';
-  document.getElementById('result').className='result';
-  document.getElementById('ntaLink').classList.remove('show');
-}
-
-async function scanDoc(){
-  if(!fileB64)return;
-  document.getElementById('btnScan').disabled=true;
-  document.getElementById('scanLoading').style.display='block';
-  document.getElementById('scanError').style.display='none';
-  document.getElementById('result').className='result';
-
-  const prompt=`あなたは日本の印紙税の専門家です。この書類を読み取り、以下のJSON形式のみで返してください。
-
-{
-  "docName": "書類名",
-  "stampStatus": "required または exempt または check",
-  "stampAmount": 数値（印紙税額円。不要は0）,
-  "stampLabel": "該当する金額区分（例：100万円超〜200万円以下）",
-  "amountLabel": "読み取った金額の表示文字列",
-  "summary": "判定結果を1文で",
-  "basis": "根拠となる法令"
-}
-
-軽減税率（令和9年3月31日まで）適用の判定基準：
-工事請負・注文請書：1万円未満=非課税、1万円以上〜100万円以下=200円、100万円超〜200万円以下=500円、200万円超〜300万円以下=1000円、300万円超〜500万円以下=5000円、500万円超〜1000万円以下=10000円、1000万円超〜5000万円以下=30000円、5000万円超〜1億円以下=60000円
-領収書：5万円未満=非課税、5万円以上〜100万円以下=200円
-見積書・請求書・注文書（発注側）・納品書・報告書・議事録=非課税（exempt）`;
-
-  const content=fileMime.startsWith('image/')
-    ?[{type:'image',source:{type:'base64',media_type:fileMime,data:fileB64}},{type:'text',text:prompt}]
-    :[{type:'document',source:{type:'base64',media_type:'application/pdf',data:fileB64}},{type:'text',text:prompt}];
-
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content}]})
-    });
-    if(!res.ok)throw new Error((await res.json()).error?.message||'API error');
-    const data=await res.json();
-    const txt=data.content.map(c=>c.text||'').join('').replace(/```json|```/g,'').trim();
-    const d=JSON.parse(txt);
-    sel={name:d.docName};
-    if(d.stampStatus==='exempt'){
-      show('exempt','印紙不要',`${d.docName}は課税文書に該当しません。\n印紙を貼る必要はありません。\n\n読み取り金額：${d.amountLabel||'—'}`,d.basis||'課税物件表に列挙なし。','');
-    }else if(d.stampStatus==='check'){
-      show('check','要確認',`${d.summary}\n\n読み取り金額：${d.amountLabel||'不明'}`,d.basis||'','');
-    }else{
-      show('required','¥'+(d.stampAmount||0).toLocaleString('ja-JP'),
-        `${d.docName}（${d.stampLabel||''}）\n¥${(d.stampAmount||0).toLocaleString('ja-JP')} の収入印紙が必要です。\n軽減税率適用（〜令和9年3月31日）\n\n読み取り金額：${d.amountLabel||'—'}\n${d.summary}`,
-        d.basis||'','');
-    }
-  }catch(e){
-    document.getElementById('scanError').textContent='エラー：'+(e.message||'読み取りに失敗しました。もう一度お試しください。');
-    document.getElementById('scanError').style.display='block';
-  }finally{
-    document.getElementById('scanLoading').style.display='none';
-    document.getElementById('btnScan').disabled=false;
-  }
-}
-
-// 早見表
 function buildRef(){
   const tabs=document.getElementById('refTabs');
   REF_TABS.forEach((t,i)=>{
